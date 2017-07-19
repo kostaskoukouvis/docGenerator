@@ -1,42 +1,42 @@
-# {{{ method }}} {{{ path }}}
+# `{{{ method }}}` {{{ path }}}
 
 {{#request.description?}}
 {{{request.description}}}
 {{/request.description?}}
+
 {{#request}}
-+ Request{{#contentType}} ({{{contentType}}}){{/contentType}}
+### Request:
 
 {{#headers?}}
-    + Headers
++ Headers
 
-            {{#headers}}
-            +{{{key}}}: {{{value}}}
-            {{/headers}}
+    {{#headers}}
+    + `{{{key}}}`: {{{value}}}
+    {{/headers}}
 
     For more information check [[Headers]]
 
 {{/headers?}}
 {{#body?}}
-    + Body
-
-            {{#body}}
-            +{{{key}}}: {{{value}}}
-            {{/body}}
-
++ Body
+```
+    {{#body}}
+    * "{{{key}}}": {{{value}}}
+    {{/body}}
+```
 {{/body?}}
-{{{body}}}
-
 {{/request}}
+
+
 {{#response}}
+### Response:
 
-
-
-+ Response 
-    + Status: {{{statusCode}}}
++ Status: **{{{statusCode}}}**
 
 {{#body?}}
-    + Body
-
++ Body
+```
+    {{{body}}}
+```
 {{/body?}}
-{{{body}}}
 {{/response}}
