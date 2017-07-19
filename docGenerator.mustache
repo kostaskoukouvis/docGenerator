@@ -1,0 +1,42 @@
+# {{{ method }}} {{{ path }}}
+
+{{#request.description?}}
+{{{request.description}}}
+{{/request.description?}}
+{{#request}}
++ Request{{#contentType}} ({{{contentType}}}){{/contentType}}
+
+{{#headers?}}
+    + Headers
+
+            {{#headers}}
+            +{{{key}}}: {{{value}}}
+            {{/headers}}
+
+    For more information check [[Headers]]
+
+{{/headers?}}
+{{#body?}}
+    + Body
+
+            {{#body}}
+            +{{{key}}}: {{{value}}}
+            {{/body}}
+
+{{/body?}}
+{{{body}}}
+
+{{/request}}
+{{#response}}
+
+
+
++ Response 
+    + Status: {{{statusCode}}}
+
+{{#body?}}
+    + Body
+
+{{/body?}}
+{{{body}}}
+{{/response}}
