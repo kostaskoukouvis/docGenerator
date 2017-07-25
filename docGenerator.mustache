@@ -1,42 +1,56 @@
 # `{{{ method }}}` {{{ path }}}
 
-{{#request.description?}}
-{{{request.description}}}
-{{/request.description?}}
+*{{{description}}}*
 
 {{#request}}
 ### Request:
 
++ Headers:
 {{#headers?}}
-+ Headers
-
     {{#headers}}
     + `{{{key}}}`: {{{value}}}
     {{/headers}}
-
-    For more information check [[Headers]]
-
+    
+    *For more information check [[Headers]]*
 {{/headers?}}
+{{^headers}}
+    No specific headers needed.
+{{/headers}}
+
++ Url Params:
+{{#urlQuery?}}
+    {{#urlQuery}}
+    + `{{{key}}}`: {{{value}}}
+    {{/urlQuery}}
+{{/urlQuery?}}
+{{^urlQuery}}
+    No specific query parameters needed.
+{{/urlQuery}}
+
++ Body:
 {{#body?}}
-+ Body
 ```
-    {{#body}}
-    * "{{{key}}}": {{{value}}}
-    {{/body}}
+{{{body}}}
 ```
 {{/body?}}
+{{^body}}
+    No specific body attributes needed.
+{{/body}}
+
 {{/request}}
+***
 
 
-{{#response}}
+{{#exchanges}}
 ### Response:
 
 + Status: **{{{statusCode}}}**
 
++ Body:
 {{#body?}}
-+ Body
 ```
-    {{{body}}}
+{{{body}}}
 ```
 {{/body?}}
-{{/response}}
+***
+{{/exchanges}}

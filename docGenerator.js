@@ -11,11 +11,16 @@
 	})(this);
 
 	docGenerator = function() {
-		this.request = function(req) {
+		this.formatRequest = function(req) {
 			var headers = [];
-			var body = [];
+			var urlQuery = [];
 			var is_json = false;
-			var k, v;
+			var body, k, v;
+			var query = req.getUrlParameters();
+			for (k in query){
+				v = query[k]
+				urlQuery.push({ key: k, value: v})
+			}
 			for (k in req.headers) {
 				v = req.headers[k];
 				if (k === "Content-Type") {
@@ -24,42 +29,49 @@
 				}
 				headers.push({ key: k, value: v});
 			}
-
 			if (req.body.length > 0) {
 				var requestBody = req.body
 				if (is_json) {
-					requestBody = JSON.parse(requestBody);
+					body = JSON.stringify(JSON.parse(requestBody), null, 4);
+				} else {
+					body = requestBody;
 				}
-				for (k in requestBody) {
-					v = requestBody[k];
-					body.push({ key: k, value: v});
-				};
 			}
 			return {
+				"urlQuery?": query != "",
+				urlQuery: urlQuery,
 				"headers?": headers.length > 0,
 				headers: headers,
-				"body?": body.length > 0,
+				"body?": body != undefined,
 				body: body
 			};
 		};
 
-		this.response = function(res) {
-			if (res.responseBody.length > 0) {
-				var k, v, val;
-				var body = [];
-				var resBody = JSON.stringify(JSON.parse(res.responseBody), null, 4);
-				// if (is_json) {
-				// 	requestBody = JSON.parse(requestBody);
-				// }
-				// for (k in resBody) {
-				// 	v = resBody[k];
-				// 	body.push({ key: k, value: v});
-				// };
+		this.formatExchanges = function(exchanges) {
+			var excArr = [];
+			for (exchange of exchanges) {
+				res = this.formatExchange(exchange);
+				excArr.push(res);
+			}
+			return excArr
+		}
+
+		this.formatExchange = function(exchange) {
+			var body, hasBody;
+			if (!exchange.responseBody) {
+				hasBody = false
+			}
+			if (exchange.responseHeaders['Content-Type'] && exchange.responseHeaders['Content-Type'].search(/(json)/i) > -1) {
+				hasBody = true
+				body = JSON.stringify(JSON.parse(exchange.responseBody), null, 4);
+			} else {
+				hasBody = true
+				body = exchange.responseBody
 			}
 			return {
-				statusCode: res.responseStatusCode,
-				"body?": true,
-				body: resBody
+				statusCode: exchange.responseStatusCode,
+				"body?": hasBody,
+				body: body
 			};
 		};
 
@@ -76,9 +88,10 @@
 			var template = readFile("docGenerator.mustache");
 			return Mustache.render(template, {
 				method: pawRequest.method,
-				path: this.path(pawRequest.url),
-				request: this.request(pawRequest),
-				response: this.response(pawRequest.getLastExchange())
+				path: this.path(pawRequest.urlBase),
+				description: pawRequest.description,
+				request: this.formatRequest(pawRequest),
+				exchanges: this.formatExchanges(pawRequest.getAllExchanges())
 			});
 		};
 	};
